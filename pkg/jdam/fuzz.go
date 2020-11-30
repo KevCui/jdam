@@ -95,6 +95,7 @@ func (f *Fuzzer) doFuzz(subject map[string]interface{}) map[string]interface{} {
 			fuzzed[k] = mutator.Mutate(rv, f.r)
 		}
 	}
+	f.curDepth = 0
 	return fuzzed
 }
 

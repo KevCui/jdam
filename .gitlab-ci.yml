@@ -45,9 +45,9 @@ compile:
     - if: $CI_COMMIT_TAG
   script:
     - mkdir $CI_PROJECT_DIR/build
-    - GOOS=darwin GOARCH=amd64 go build -o $CI_PROJECT_DIR/build/${DARWIN_AMD64_BINARY} ./cmd/jdam/*
-    - GOOS=linux GOARCH=amd64 go build -o $CI_PROJECT_DIR/build/${LINUX_AMD64_BINARY} ./cmd/jdam/*
-    - GOOS=windows GOARCH=amd64 go build -o $CI_PROJECT_DIR/build/${WINDOWS_AMD64_BINARY} ./cmd/jdam/*
+    - GOOS=darwin GOARCH=amd64 go build -o $CI_PROJECT_DIR/build/${DARWIN_AMD64_BINARY} -ldflags="-X 'main.version=${CI_COMMIT_TAG}'" ./cmd/jdam/*
+    - GOOS=linux GOARCH=amd64 go build -o $CI_PROJECT_DIR/build/${LINUX_AMD64_BINARY} -ldflags="-X 'main.version=${CI_COMMIT_TAG}'" ./cmd/jdam/*
+    - GOOS=windows GOARCH=amd64 go build -o $CI_PROJECT_DIR/build/${WINDOWS_AMD64_BINARY} -ldflags="-X 'main.version=${CI_COMMIT_TAG}'" ./cmd/jdam/*
     - shasum -a 256 $CI_PROJECT_DIR/build/* > $CI_PROJECT_DIR/build/checksums.txt
   artifacts:
     paths:
@@ -80,4 +80,3 @@ release:
         --assets-link "{\"name\":\"${LINUX_AMD64_BINARY}\",\"url\":\"${PACKAGE_REGISTRY_URL}/${LINUX_AMD64_BINARY}\"}" \
         --assets-link "{\"name\":\"${WINDOWS_AMD64_BINARY}\",\"url\":\"${PACKAGE_REGISTRY_URL}/${WINDOWS_AMD64_BINARY}\"}" \
         --assets-link "{\"name\":\"checksums.txt\",\"url\":\"${PACKAGE_REGISTRY_URL}/checksums.txt\"}"
-

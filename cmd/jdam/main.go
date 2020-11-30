@@ -26,7 +26,7 @@ func main() {
 	logger.SetVerbose(*options.Verbose)
 
 	if *options.Version {
-		fmt.Printf("jdam v%s\n", version)
+		fmt.Printf("jdam %s\n", version)
 		os.Exit(0)
 	}
 
@@ -35,7 +35,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	logger.Important("jdam v%s started at %s\n", version, time.Now().Format(time.RFC3339))
+	logger.Important("jdam %s started at %s\n", version, time.Now().Format(time.RFC3339))
 
 	if *options.Output != "" {
 		outDir := filepath.Dir(*options.Output)
@@ -78,8 +78,6 @@ func main() {
 		logger.Fatal("Unable to parse input as JSON object: %s\n", err.Error())
 	}
 
-	fuzzed := map[string]interface{}{}
-
 	var fuzzer *jdam.Fuzzer
 	if *options.Seed != 0 {
 		logger.Info("Using PRNG seed: %d\n", *options.Seed)
@@ -92,7 +90,7 @@ func main() {
 		MaxDepth(*options.MaxDepth)
 
 	for i := 0; i < *options.Count; i++ {
-		fuzzed = subject
+		fuzzed := copyMap(subject)
 		for j := 0; j < *options.Rounds; j++ {
 			logger.Info("[OBJECT #%d] Fuzzing round: %d\n", i+1, j+1)
 			fuzzed = fuzzer.Fuzz(fuzzed)
@@ -151,4 +149,12 @@ func mutatorListFromIDs(ids []string) mutation.MutatorList {
 		}
 	}
 	return mutators
+}
+
+func copyMap(orig map[string]interface{}) map[string]interface{} {
+	cp := make(map[string]interface{})
+	for k, v := range orig {
+		cp[k] = v
+	}
+	return cp
 }
