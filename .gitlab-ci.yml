@@ -4,7 +4,7 @@ image: golang:latest
 variables:
   # Please edit to your GitLab project
   REPO_NAME: gitlab.com/michenriksen/jdam
-  PACKAGE_VERSION: "0.1.0"
+  PACKAGE_VERSION: "0.1.1"
   DARWIN_AMD64_BINARY: "jdam-darwin-amd64-${CI_COMMIT_TAG}"
   LINUX_AMD64_BINARY: "jdam-linux-amd64-${CI_COMMIT_TAG}"
   WINDOWS_AMD64_BINARY: "jdam-windows-amd64-${CI_COMMIT_TAG}.exe"
