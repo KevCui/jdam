@@ -150,7 +150,7 @@ I would like to give credit and thanks to a couple of other projects:
 
 - [Radamsa] for the inspiration for jdam.
 - [gofuzz] for giving me ideas on how to code jdam.
-- [SecLists] and [PayloadAllTheThings] for fuzzing payloads.
+- [SecLists] and [PayloadsAllTheThings] for fuzzing payloads.
 - [ffuf] for making it super easy to use jdam against web apps.
 
 **Happy Fuzzing!**
@@ -168,3 +168,4 @@ I would like to give credit and thanks to a couple of other projects:
 [Go]: https://golang.org/
 [gofuzz]: https://github.com/google/gofuzz
 [SecLists]: https://github.com/danielmiessler/SecLists
+[PayloadsAllTheThings]: https://github.com/swisskyrepo/PayloadsAllTheThings
