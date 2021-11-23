@@ -72,7 +72,6 @@ func (f *Fuzzer) doFuzz(subject map[string]interface{}) map[string]interface{} {
 	fuzzed := map[string]interface{}{}
 	targetField := f.findTargetField(subject)
 	for k, v := range subject {
-		rv := reflect.ValueOf(v)
 		if k != targetField {
 			fuzzed[k] = v
 			continue
@@ -81,19 +80,7 @@ func (f *Fuzzer) doFuzz(subject map[string]interface{}) map[string]interface{} {
 			fuzzed[k] = nil
 			continue
 		}
-		switch rv.Kind() {
-		case reflect.Map:
-			fuzzed[k] = f.doFuzz(v.(map[string]interface{}))
-		case reflect.Slice:
-			fuzzed[k] = f.fuzzSlice(v.([]interface{}))
-		default:
-			mutator := f.randMutator(rv.Kind())
-			if mutator == nil {
-				fuzzed[k] = v
-				continue
-			}
-			fuzzed[k] = mutator.Mutate(rv, f.r)
-		}
+		fuzzed[k] = f.fuzzElement(v)
 	}
 	f.curDepth = 0
 	return fuzzed
@@ -139,16 +126,24 @@ func (f *Fuzzer) fuzzSlice(a []interface{}) []interface{} {
 	tmp := make([]interface{}, len(a))
 	copy(tmp, a)
 	f.r.Shuffle(len(a), func(i, j int) { tmp[i], tmp[j] = tmp[j], tmp[i] })
-	for i, v := range tmp {
-		rv := reflect.ValueOf(v)
-		mutator := f.randMutator(rv.Kind())
-		if mutator == nil {
-			continue
-		}
-		tmp[i] = mutator.Mutate(rv, f.r)
-		break
-	}
+	fuzzIndex := f.r.Intn(len(a))
+	tmp[fuzzIndex] = f.fuzzElement(tmp[fuzzIndex])
 	return tmp
+}
+
+func (f *Fuzzer) fuzzElement(v interface{}) interface{} {
+	rv := reflect.ValueOf(v)
+	switch rv.Kind() {
+	case reflect.Map:
+		return f.doFuzz(v.(map[string]interface{}))
+	case reflect.Slice:
+		return f.fuzzSlice(v.([]interface{}))
+	default:
+		if mutator := f.randMutator(rv.Kind()); mutator != nil {
+			return mutator.Mutate(rv, f.r)
+		}
+	}
+	return v
 }
 
 func (f *Fuzzer) makeMutatorMap(mutators mutation.MutatorList) *Fuzzer {
